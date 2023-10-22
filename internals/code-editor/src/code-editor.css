@@ -1,0 +1,15 @@
+:host {
+    --editor-width: 100%;
+    --editor-height: 100%;
+}
+main {
+    width: var(--editor-width);
+    height: var(--editor-height);
+}
+
+
+slot {
+  /* visibility: hidden;
+  max-height: 0; */
+  display: none;
+}

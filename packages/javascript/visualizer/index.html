@@ -1,0 +1,34 @@
+<html>
+  <body>
+    <style>
+      html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+    </style>
+
+<div id="root"></div>
+    <script type="module">
+import renderDiagraphVisualization from './src/index.tsx';
+const props = {
+  nodes: [
+    { id: 'a', label: 'foo', prompt: 'some wild prompt', fn: 'def foo():\n  return "foo"', result: 'some result!' },
+    { id: 'b', label: 'bar', prompt: '', fn: '', result: '' },
+    { id: 'c', label: 'baz', prompt: '', fn: '', result: '' },
+  ],
+  graph: {
+    a: ['b', 'c',],
+    b: ['c']
+  },
+};
+renderDiagraphVisualization(document.getElementById('root'), props)
+
+    </script>
+  </body>
+</html>

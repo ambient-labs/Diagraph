@@ -1,0 +1,85 @@
+# Runs on pushes to the main branch. Whenever a difference in version is detected,
+# this workflow automatically creates a new tag and pushes it, which
+# should trigger subsequent actions.
+name: Tag & Release
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  Release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Check pypi versions
+        uses: maybe-hello-world/pyproject-check-version@v4
+        id: versioncheck
+        with:
+          pyproject-path: "./packages/python/pyproject.toml"    # default value
+          test-regex: "[0-9]+.[0-9]+.[0-9]+rc[0-9]+"
+
+      - name: check output
+        run: |
+            echo "Output: ${{ steps.versioncheck.outputs.local_version_is_higher }}"  # 'true' or 'false
+            echo "Local version: ${{ steps.versioncheck.outputs.local_version }}"     # e.g., 0.1.1
+            echo "Public version: ${{ steps.versioncheck.outputs.public_version }}"   # e.g., 0.1.0
+            echo "Is test: ${{ steps.versioncheck.outputs.is_test }}"   # e.g., 0.1.0
+
+      - name: Tag new release
+        if: "contains( steps.versioncheck.outputs.local_version_is_higher , 'true')"
+        working-directory: ./packages/python
+        run: |
+              git config --global user.name 'Github Actions'
+              git config --global user.email 'ambient-labs@users.noreply.github.com'
+              git tag -a ${{ steps.versioncheck.outputs.local_version }} -m "Tag ${{ steps.versioncheck.outputs.local_version }} for release" && git push --tags
+              python -m pip install -U pip setuptools build
+              make build_diagraph
+
+      - name: Publish to Test Pypi
+        uses: pypa/gh-action-pypi-publish@b7f401de30cb6434a1e19f805ff006643653240e
+        if: "contains( steps.versioncheck.outputs.local_version_is_higher , 'true') && contains( steps.versioncheck.outputs.is_test , 'true')"
+        with:
+          packages-dir: ./packages/python/dist
+          verbose: true
+          repository-url: https://test.pypi.org/legacy/
+
+
+      - name: Publish to Pypi
+        uses: pypa/gh-action-pypi-publish@b7f401de30cb6434a1e19f805ff006643653240e
+        if: "contains( steps.versioncheck.outputs.local_version_is_higher , 'true') && contains( steps.versioncheck.outputs.is_test , 'false')"
+        with:
+          packages-dir: ./packages/python/dist
+          verbose: true  
+
+      # - name: Cut a Test Release
+      #   uses: "marvinpinto/action-automatic-releases@latest"
+      #   if: "contains( steps.versioncheck.outputs.local_version_is_higher , 'true') && contains( steps.versioncheck.outputs.is_test , 'true')"
+      #   with:
+      #     repo_token: "${{ secrets.GITHUB_TOKEN }}"
+      #     prerelease: true
+      #     automatic_release_tag: "${{ steps.versioncheck.outputs.local_version }}"
+      #     # files: |
+      #     #   LICENSE.txt
+      #     #   *.jar
+      #     #
+
+
+      - name: Cut a Production Release
+        uses: "marvinpinto/action-automatic-releases@6273874b61ebc8c71f1a61b2d98e234cf389b303"
+        if: "contains( steps.versioncheck.outputs.local_version_is_higher , 'true') && contains( steps.versioncheck.outputs.is_test , 'false')"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          automatic_release_tag: "${{ steps.versioncheck.outputs.local_version }}"
+          # files: |
+          #   LICENSE.txt
+          #   *.jar
+          #          
+permissions:
+  contents: write
+  id-token: write

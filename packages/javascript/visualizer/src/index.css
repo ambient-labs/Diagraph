@@ -1,0 +1,21 @@
+.react-flow__attribution {
+  opacity: 0.6;
+
+  & a {
+    color: inherit;
+  }
+
+  &:before {
+    display: inline-block;
+    margin-right: 3px;
+  }
+}
+
+.react-flow__resize-control.line {
+  padding: 0px;
+  /* border-color: transparent;
+
+  &:hover {
+    border-color: #3367d9;
+  } */
+}

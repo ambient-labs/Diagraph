@@ -1,0 +1,11 @@
+.pytest_cache
+.ruff_cache
+.venv
+__pycache__
+build
+diagraph.egg-info
+dist
+env
+.python-version
+diagraph/assets/*
+dev

@@ -1,0 +1,36 @@
+{
+  "name": "@internals/code-editor",
+  "type": "module",
+  "private": true,
+  "version": "0.1.0",
+  "main": "./dist/register.js",
+  "scripts": {
+    "build": "wireit"
+  },
+  "wireit": {
+    "build": {
+      "command": "tsc && cp ./src/code-editor.css ./dist/code-editor.css",
+      "dependencies": [
+        "../shared:build"
+      ],
+      "files": [
+        "./src/**/*",
+        "package.json",
+        "tsconfig.json",
+        "global.d.ts"
+      ],
+      "output": [
+        "./dist/**/*"
+      ]
+    }
+  },
+  "dependencies": {
+    "@internals/shared": "workspace:*",
+    "lit": "^3.0.2",
+    "monaco-editor": "^0.44.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "wireit": "^0.14.1"
+  }
+}

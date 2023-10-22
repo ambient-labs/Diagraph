@@ -1,0 +1,65 @@
+name: Test
+
+"on":
+  #push:
+  #  branches:
+  #    - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  FORCE_COLOR: "1"
+
+jobs:
+  Test:
+    name: ${{ matrix.pyversion }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # https://github.com/actions/python-versions/blob/main/versions-manifest.json
+          - pyversion: "3.12"
+            enable_coverage: true
+          - pyversion: "3.11"
+          - pyversion: "3.10"
+            more_hypothesis_examples_if_cron: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.pyversion }}
+          cache: pip
+          cache-dependency-path: ./packages/python/${{ format('python{0}', matrix.pyversion) }}/test.txt
+
+      - run: python -m pip install -U pip setuptools wheel
+        working-directory: ./packages/python
+
+      - name: Install dev dependencies
+        run: pip install -r dev-deps/${{ format('python{0}', matrix.pyversion) }}/test.txt
+        working-directory: ./packages/python
+
+      - name: Install Diagraph dependencies
+        run: pip install .
+        working-directory: ./packages/python
+
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
+      #   with:
+      #     detached: true
+
+      - run: python -m pytest
+        working-directory: ./packages/python
+
+      - name: Upload coverage to Codecov  # https://github.com/codecov/codecov-action
+        uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
+        if: matrix.enable_coverage
+        with:
+          verbose: true
+          files: ./packages/python/coverage.xml
+          fail_ci_if_error: false  # https://github.com/codecov/codecov-action/issues/557
+
+permissions:
+  contents: read

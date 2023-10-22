@@ -1,0 +1,98 @@
+[project]
+name = "diagraph"
+version = "0.4.6"
+# Notes
+authors = [{ name = "Ambient Labs", email = "maintainers@diagraph.dev" }]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["pydantic", "networkx", "openai>=1.3.0", "tiktoken"]
+description = "DAGs for LLM interactions"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/ambient-labs/diagraph"
+"Bug Tracker" = "https://github.com/ambient-labs/diagraph/issues"
+
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["diagraph*"]
+
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+# pyproject.toml
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["diagraph/**/*_test.py", "test/**/*_test.py"]
+
+
+[tool.ruff]
+line-length = 120
+preview = true
+# https://beta.ruff.rs/docs/rules/
+extend-select = [
+  "A",
+  "ARG",
+  "B",
+  "BLE",
+  "COM",
+  "E",
+  "F",
+  "FA",
+  "FIX",
+  "FLY",
+  "FURB",
+  "G",
+  "I",
+  "ICN",
+  "ISC",
+  "INP",
+  "PERF",
+  "PGH",
+  "PIE",
+  "PT",
+  "PTH",
+  "RET",
+  "RSE",
+  "RUF",
+  "SLOT",
+  "T20",
+  "TD",
+  "TID",
+  "UP",
+  "W",
+  "YTT",
+]
+ignore = ["TD002", "TD003", "TID252", "FIX002", "BLE001", "FLY002"]
+
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.lint.per-file-ignores]
+"**/*_test.py" = [
+  "B018",
+  "T201",
+  "RUF012",
+  "PERF203",
+  "FLY002",
+  "ARG001",
+  "B008",
+  "ARG002",
+  "A002",
+  "A001",
+  "PT012",
+]
+
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"

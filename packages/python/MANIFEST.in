@@ -1,0 +1,3 @@
+include diagraph/assets/**/*
+include LICENSE
+exclude env/bin/*.py

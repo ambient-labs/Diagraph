@@ -1,0 +1,26 @@
+  .codeBlock {
+    --padding: 5px;
+    padding: var(--padding);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    cursor: text;
+    overflow-x: scroll;
+
+    & span {
+      font-family: Roboto, monospace;
+    }
+
+    & .lineNumber {
+      padding-right: calc(var(--padding) * 2);
+      opacity: 0.25;
+
+    }
+
+    &:hover {
+
+      & .lineNumber {
+
+        opacity: 1;
+      }
+
+    }
+  }

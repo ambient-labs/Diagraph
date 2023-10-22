@@ -1,0 +1,11 @@
+pip-tools
+twine
+pytest
+pytest-watcher
+pytest-cov
+pytest-mock
+pytest-describe
+nest_asyncio
+openai>=1.3.0
+tiktoken
+ruff
